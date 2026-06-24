@@ -1,0 +1,5 @@
+{
+  "buildSites": [
+    { "id": "cozy_lamp_1", "name": "Cozy Lamp Post", "structure": "signpost", "pos": { "x": 12, "z": -8 }, "rot": 0.4 }
+  ]
+}

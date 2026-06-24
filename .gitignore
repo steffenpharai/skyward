@@ -1,0 +1,37 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+*.tsbuildinfo
+
+# logs
+*.log
+npm-debug.log*
+
+# editor / OS
+.DS_Store
+.vscode/
+.idea/
+
+# scratch
+tools/ref/
+
+# vite
+*.local
+
+# large media / recordings
+*.mp4
+
+# ephemeral verification captures (keep milestone shots only)
+tools/shots/restart_check.jpg
+tools/shots/verify_water.jpg
+tools/shots/char_rig.jpg
+server/data/
+node_modules/
+dist/
+.claude/
+server/data/
+*.mp4
+*.local
+.env

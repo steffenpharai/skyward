@@ -1,0 +1,8 @@
+{
+  "track": "data",
+  "name": "Cozy Lamp Post",
+  "description": "A small decorative content pack illustrating the data-contribution format: a signpost-style marker placed as a warm gathering point. Replace with your own pack.",
+  "license": "FSL-1.1-contrib",
+  "files": [{ "path": "manifest.json" }, { "path": "pack.json" }],
+  "manifest": { "kind": "content-pack", "sites": 1 }
+}

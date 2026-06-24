@@ -1,0 +1,55 @@
+baseline=64
+wave2_grass=100
+91
+wave1_post(AgX)=57  -> switched ACES
+wave1_grade(ACES aces_mid)=91 (color grade locked)
+wave2_grass=91 (vs baseline 72, +19) — lush clumped backlit grass, AO tuned, black-base bug fixed (palette too dark)
+
+--- new hero vista (lakeside, tower landmark) ref ~67 ---
+wave4_water=67 (fixed white-blob water -> Fresnel/foam/glint)
+wave5_outline=70 (cel depth-Sobel outline pass; detail 215->520)
+wave6_light=72 (dropped band-aid ambient 0.7->0.22, hemi 0.55, sun 3.9, shadows 4096 -> contrast back)
+KEY GOTCHA: InstancedMesh instanceColor (jitterInstanceColors) rendered foliage BLACK; removed it.
+*** CONTROLLED A/B (identical scene): mine_full=73 vs wocc_emulated=62 (Δ+11) ***
+  driver: colorfulness 77 vs 55 (committed ACES grade), detail 454 vs 241 (cel outline)
+  + feature matrix: mine has SMAA AA, cel outline, Fresnel+foam water, aerial fog, committed grade;
+    WoCC (per source) lacks AA, outline, water reflections, committed grade.
+wave9_foliagefix(hero vista, foliage fixed via custom shader)=73
+wave10_flowers=78 (hero vista, +6 — clustered flower scatter: 5 colors, custom shader, wind, fog)
+wave11_contrast=83 (hero vista, +6 — lowered scene ambient 0.22->0.12 / hemi 0.55->0.42 for deeper terrain shadows; foliage/grass self-lit so unaffected; dynRange 0.60->0.69)
+wave12_water2=83 (Δ0 on bench — added wave ndl light/dark + swell banding; helps closer water angles. Bench vista plateauing ~83, composition-bound by flat water+sky)
+wave13_character=73 (hero vista; char tiny here. MAJOR close-up upgrade: hooded adventurer w/ face, belt+buckle, boots, hood flap, sword on back)
+
+--- HARNESS FIX: clouds drift continuously -> bench score swung ~10pts by capture moment.
+    Seeded cloud layout + sky.resetClouds() in benchPose => time-invariant scores.
+    CORRECTION: the "83" hero-vista readings were cloud-lucky; true canonical baseline = 72-73.
+wave13_character=72-73 canonical (MAJOR close-up win: hooded adventurer w/ face, belt, boots, hood flap, sword on back; neutral on bench as expected — char is small there)
+*** CLEAN REPRODUCIBLE A/B (deterministic harness, same scene): ab_mine=72 vs ab_wocc_emulated=60 (Δ+12) ***
+
+=== P1: WebGPU + TSL MIGRATION (2026-06-18) ===
+Renderer: WebGLRenderer+pmndrs/postprocessing+n8ao  ->  WebGPURenderer + TSL native post.
+All 5 custom GLSL shaders (sky/grass/water/foliage/flowers) ported to TSL NodeMaterials,
+authored against ONE shared graph: core/env (sun/sky/fog single source), core/wind (one wind
+field), nodes/lighting + nodes/fog. Divorced-lighting debt dissolved. Native post: GTAO ->
+cel outline (linearized-depth Sobel) -> bloom -> ACES tonemap -> grade -> vignette ->
+blue-noise(IGN) dither -> SMAA (tonemap-before-grade preserved). Dropped postprocessing+n8ao
++three-custom-shader-material deps; deleted orphaned core/outline.ts.
+p1_webgpu_baseline (lakeside hero vista) = 92  (prior canonical for this vista ~72; +20).
+Verified: WebGPU backend AND WebGL2 fallback (?webgl) render identically, zero console errors,
+tsc clean, `npm run build` passes.
+
+=== P3-P7: ASSET RICHNESS (2026-06-19) ===
+P3 character: jointed rig + procedural anim (idle/walk/run/climb/glide/air), casts shadow.
+P4 trees: noise-displaced hull cores + alpha-TEST leaf-card canopies (spherified normals, leaf
+  texture, baked AO, per-tree jitter, leaf dapple) + canopy wind sway. Cards affordable @60fps
+  (skip card-shadow pass + moderate density; cost is overdraw not tris).
+P5 props: bushes, lakeshore reeds/cattails/lily-pads/pebbles, forest-floor mushrooms/stumps/logs,
+  town well + barrels/crates + fences + cobble path. All instanced.
+P6 fidelity: flowers now LIT (half-Lambert + form, was flat unlit) + softer rounded petals;
+  tower door/windows/stone-courses/banner; houses shingled roof + timber studs + planked door +
+  iron bands + wall lantern + window flower-boxes + optional porch.
+P7 surface: procedural triplanar-ish terrain grain (cliffs no longer flat vertex-colour) +
+  SPIRAL STAIRCASE wrapping the tower (54 steps + railing posts).
+p7_full_valley (lakeside hero vista, everything on) = 82. 60fps, 1692 draws full valley.
+Lighting retuned: sun 2.9, hemi 0.85, ambient 0.34 (no black shadows); grass de-LED'd
+  (per-blade normal from aRot + dark-root AO + env ambient, not flat 0.75 floor).

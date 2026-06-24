@@ -1,0 +1,34 @@
+{
+  "name": "skyward",
+  "private": true,
+  "version": "0.28.0",
+  "type": "module",
+  "license": "SEE LICENSE IN LICENSE",
+  "scripts": {
+    "dev": "vite",
+    "server": "node server/index.mjs",
+    "world": "node server/world.mjs",
+    "agent": "node server/agent.mjs",
+    "brain": "node server/brain.mjs",
+    "mcp": "node server/mcp.mjs",
+    "mcp-world": "node packages/skyward-mcp/index.mjs",
+    "test-world": "node server/test-world.mjs",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "simplex-noise": "^4.0.3",
+    "three": "^0.184.0",
+    "ws": "^8.21.0"
+  },
+  "optionalDependencies": {
+    "pg": "^8.13.1"
+  },
+  "devDependencies": {
+    "@types/three": "^0.184.1",
+    "sharp": "^0.35.1",
+    "sobel": "^0.0.11",
+    "typescript": "^5.4.5",
+    "vite": "^5.2.0"
+  }
+}
